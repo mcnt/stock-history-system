@@ -37,6 +37,21 @@ stock-history-system
 ├── run_server.py           # Script para iniciar o servidor web
 └── README.md               # Documentação do projeto
 ```
+## Estrutura do Banco de Dados
+
+### Tabela: assets
+- id: INTEGER (PK)
+- ticker: TEXT (UNIQUE)
+
+### Tabela: prices
+- id: INTEGER (PK)
+- asset_id: INTEGER (FK para assets.id)
+- date: DATE
+- open_price: FLOAT
+- high_price: FLOAT
+- low_price: FLOAT
+- close_price: FLOAT
+- volume: INTEGER
 
 ## Pré-requisitos
 - Python 3.8 ou superior
