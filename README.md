@@ -87,6 +87,14 @@ stock-history-system
    # Edite o arquivo .env conforme necessário
    ```
 
+## Dados de Exemplo
+
+Para popular o banco de dados com dados de exemplo, execute:
+
+```bash
+python seed_database.py
+```
+
 ## Como Usar
 ### Coletando Dados
 Para iniciar a coleta de dados de um ativo específico:
