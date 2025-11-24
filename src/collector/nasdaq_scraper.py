@@ -116,7 +116,7 @@ def save_to_database(data):
     with engine.begin() as conn:
         asset = conn.execute(select(assets).where(assets.c.ticker == ticker)).first()
         if not asset:
-            conn.execute(insert(assets).values(ticker=ticker))
+            result = conn.execute(insert(assets).values(ticker=ticker))
             asset_id = result.inserted_primary_key[0]
         else:
             asset_id = asset[0]
