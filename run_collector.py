@@ -19,7 +19,6 @@ def run_collector(ticker: str, once: bool = False, interval: int = 3600):
             if result is not None and save_fn is not None:
                 try:
                     save_fn(result)
-                    print(f"Data for {ticker} fetched and saved successfully.")
                 except Exception as e:
                     print(f"Fetched data but failed to save for {ticker}: {e}")
             else:

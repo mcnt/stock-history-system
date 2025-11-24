@@ -1,5 +1,4 @@
 import requests
-from bs4 import BeautifulSoup
 from pathlib import Path
 from sqlalchemy import (create_engine, MetaData, Table, Column, Integer, Float,
                         String, Date, ForeignKey, select, delete, insert)
@@ -45,13 +44,12 @@ def fetch_historical_data(ticker: str, years: int = 1):
         )
         
         if response.status_code != 200:
-            print(f"[fetch] Erro na requisição: {response.status_code}")
+            
             return []
             
         data = response.json()
         
         if not data.get('data') or not data['data'].get('tradesTable', {}).get('rows'):
-            print(f"[fetch] Nenhum dado encontrado para {ticker}")
             return []
         
         rows = []
@@ -73,19 +71,15 @@ def fetch_historical_data(ticker: str, years: int = 1):
                     int(row['volume'].replace(',', '') or 0)
                 ))
             except (ValueError, KeyError) as e:
-                print(f"[fetch] Erro ao processar linha: {row}. Erro: {e}")
                 continue
         
         rows.sort(key=lambda x: x[1])
         
-        print(f"[fetch] {len(rows)} registros obtidos para {ticker}")
         return rows
         
     except requests.exceptions.RequestException as e:
-        print(f"[fetch] Erro na requisição para {ticker}: {e}")
         return []
     except Exception as e:
-        print(f"[fetch] Erro inesperado ao buscar dados para {ticker}: {e}")
         return []
 
 def save_to_database(data):
@@ -122,13 +116,11 @@ def save_to_database(data):
     with engine.begin() as conn:
         asset = conn.execute(select(assets).where(assets.c.ticker == ticker)).first()
         if not asset:
-            result = conn.execute(insert(assets).values(ticker=ticker))
+            conn.execute(insert(assets).values(ticker=ticker))
             asset_id = result.inserted_primary_key[0]
-            print(f"[save] Novo ativo criado: {ticker} (id={asset_id})")
         else:
             asset_id = asset[0]
             conn.execute(delete(prices).where(prices.c.asset_id == asset_id))
-            print(f"[save] Preços antigos deletados para {ticker}")
         price_data = []
         for row in data:
             try:
@@ -144,11 +136,10 @@ def save_to_database(data):
                     'volume': row[6]
                 })
             except Exception as e:
-                print(f"[save] Erro ao processar linha: {row}. Erro: {e}")
+                pass
 
         if price_data:
             conn.execute(insert(prices), price_data)
-            print(f"[save] {len(price_data)} registros de preços salvos para {ticker}")
 
 if __name__ == "__main__":
     ticker = "AAPL"
